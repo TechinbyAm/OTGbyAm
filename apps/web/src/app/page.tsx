@@ -20,21 +20,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import useHandleStreamResponse from '@/utils/useHandleStreamResponse';
-
-// ---------- Design tokens ----------
-// Display: Playfair Display · Body/UI: DM Sans · Data/captions: DM Mono
-// Palette: ink #14213D · cloud #F7F5F1 · deep teal #2C5F5A · antique gold #C9A227 · terracotta #C4622A
-const FONT_LINK =
-  'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap';
-
-const THEMES = [
-  { id: 'coastal-reset', label: 'Coastal Reset', icon: '〜' },
-  { id: 'culinary-crawl', label: 'Culinary Crawl', icon: '✦' },
-  { id: 'wellness-retreat', label: 'Wellness Retreat', icon: '◎' },
-  { id: 'city-immersion', label: 'City Immersion', icon: '▣' },
-  { id: 'adventure-edge', label: 'Adventure Edge', icon: '▲' },
-  { id: 'slow-village', label: 'Slow Village', icon: '◈' },
-];
+import { COLORS, GRADIENT, FONTS, FONT_LINK, THEMES } from '@/utils/theme';
 
 type AffiliateLink = { label: string; url: string };
 type Trip = {
@@ -152,17 +138,17 @@ function StampBadge({ theme, small }: { theme: string; small?: boolean }) {
         small ? 'w-14 h-14' : 'w-20 h-20'
       }`}
       style={{
-        borderColor: '#C9A227',
+        borderColor: COLORS.gold,
         borderStyle: 'dashed',
-        color: '#C9A227',
-        background: 'rgba(201,162,39,0.06)',
+        color: COLORS.gold,
+        background: COLORS.goldTint,
       }}
     >
       <span className={small ? 'text-base' : 'text-xl'}>{t.icon}</span>
       {!small && (
         <span
           className="text-[8px] tracking-widest uppercase mt-0.5"
-          style={{ fontFamily: 'DM Mono, monospace' }}
+          style={{ fontFamily: FONTS.mono }}
         >
           {t.label.split(' ')[0]}
         </span>
@@ -190,14 +176,14 @@ function TripCard({
     <div className="space-y-1.5">
       <div
         className="text-[9px] uppercase tracking-widest"
-        style={{ fontFamily: 'DM Mono, monospace', color: '#C9A227' }}
+        style={{ fontFamily: FONTS.mono, color: COLORS.gold }}
       >
         Itinerary
       </div>
       {subtitle && (
         <p
           className="text-xs italic leading-snug"
-          style={{ fontFamily: 'Playfair Display, serif', color: '#14213D' }}
+          style={{ fontFamily: FONTS.display, color: COLORS.ink }}
         >
           {subtitle}
         </p>
@@ -208,7 +194,7 @@ function TripCard({
             <li key={i} className="flex items-start gap-1.5 text-xs text-neutral-600">
               <span
                 className="mt-0.5 shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-semibold"
-                style={{ background: 'rgba(44,95,90,0.1)', color: '#2C5F5A' }}
+                style={{ background: COLORS.tealTint, color: COLORS.teal }}
               >
                 {i + 1}
               </span>
@@ -224,23 +210,23 @@ function TripCard({
     <Link href={`/trips/${trip.id}`} className="block">
       <div
         className="rounded-2xl overflow-hidden border flex flex-col hover:shadow-lg transition-shadow cursor-pointer"
-        style={{ borderColor: 'rgba(20,33,61,0.12)', background: '#FFFFFF' }}
+        style={{ borderColor: COLORS.border, background: COLORS.white }}
       >
         <div
           className="p-5 flex items-start gap-4"
-          style={{ background: 'linear-gradient(135deg, #2C5F5A 0%, #07325f 60%)' }}
+          style={{ background: GRADIENT.header }}
         >
           <StampBadge theme={trip.theme} />
           <div className="flex-1 min-w-0">
             <div
               className="text-[10px] uppercase tracking-[0.2em] text-white/60"
-              style={{ fontFamily: 'DM Mono, monospace' }}
+              style={{ fontFamily: FONTS.mono }}
             >
               {t.label}
             </div>
             <h3
               className="text-white text-xl leading-tight mt-1 truncate"
-              style={{ fontFamily: 'Playfair Display, serif', fontWeight: 600 }}
+              style={{ fontFamily: FONTS.display, fontWeight: 600 }}
               title={trip.title || 'Untitled trip'}
             >
               {trip.title || 'Untitled trip'}
@@ -252,18 +238,18 @@ function TripCard({
           </div>
         </div>
         <div className="p-5 flex-1 flex flex-col gap-3">
-          <div className="flex items-center justify-between text-sm" style={{ color: '#14213D' }}>
+          <div className="flex items-center justify-between text-sm" style={{ color: COLORS.ink }}>
             <span className="flex items-center gap-1.5">
-              <Calendar size={14} style={{ color: '#C4622A' }} />
+              <Calendar size={14} style={{ color: COLORS.terracotta }} />
               {fmtDate(trip.startDate)} – {fmtDate(trip.endDate)}
             </span>
             <span className="flex items-center gap-1.5">
-              <Users size={14} style={{ color: '#C4622A' }} />
+              <Users size={14} style={{ color: COLORS.terracotta }} />
               Up to {trip.capacity || 10}
             </span>
           </div>
           {trip.priceFrom && (
-            <div className="text-sm" style={{ fontFamily: 'DM Mono, monospace', color: '#2C5F5A' }}>
+            <div className="text-sm" style={{ fontFamily: FONTS.mono, color: COLORS.teal }}>
               from ${trip.priceFrom}
             </div>
           )}
@@ -277,7 +263,7 @@ function TripCard({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-xs px-3 py-1.5 rounded-full border flex items-center gap-1 hover:bg-neutral-50 transition"
-                  style={{ borderColor: '#C9A227', color: '#8a6c1a' }}
+                  style={{ borderColor: COLORS.gold, color: COLORS.goldDark }}
                 >
                   <Link2 size={11} />
                   {l.label || 'Link'}
@@ -295,10 +281,10 @@ function TripCard({
                 title={trip.status === 'published' ? 'Click to unpublish' : 'Click to publish'}
                 className="text-[10px] uppercase tracking-widest px-2 py-1 rounded-full flex items-center gap-1 transition hover:opacity-70"
                 style={{
-                  fontFamily: 'DM Mono, monospace',
+                  fontFamily: FONTS.mono,
                   background:
-                    trip.status === 'published' ? 'rgba(44,95,90,0.1)' : 'rgba(196,98,42,0.1)',
-                  color: trip.status === 'published' ? '#2C5F5A' : '#C4622A',
+                    trip.status === 'published' ? COLORS.tealTint : 'rgba(196,98,42,0.1)',
+                  color: trip.status === 'published' ? COLORS.teal : COLORS.terracotta,
                 }}
               >
                 {trip.status === 'published' ? <Globe size={10} /> : <Lock size={10} />}
@@ -308,10 +294,10 @@ function TripCard({
               <span
                 className="text-[10px] uppercase tracking-widest px-2 py-1 rounded-full"
                 style={{
-                  fontFamily: 'DM Mono, monospace',
+                  fontFamily: FONTS.mono,
                   background:
-                    trip.status === 'published' ? 'rgba(44,95,90,0.1)' : 'rgba(196,98,42,0.1)',
-                  color: trip.status === 'published' ? '#2C5F5A' : '#C4622A',
+                    trip.status === 'published' ? COLORS.tealTint : 'rgba(196,98,42,0.1)',
+                  color: trip.status === 'published' ? COLORS.teal : COLORS.terracotta,
                 }}
               >
                 {trip.status === 'published' ? 'Published' : 'Draft'}
@@ -326,7 +312,7 @@ function TripCard({
                   }}
                   className="p-1.5 rounded-full hover:bg-neutral-100 transition"
                 >
-                  <Edit3 size={14} style={{ color: '#14213D' }} />
+                  <Edit3 size={14} style={{ color: COLORS.ink }} />
                 </button>
                 <button
                   onClick={(e) => {
@@ -335,7 +321,7 @@ function TripCard({
                   }}
                   className="p-1.5 rounded-full hover:bg-neutral-100 transition"
                 >
-                  <Trash2 size={14} style={{ color: '#C4622A' }} />
+                  <Trash2 size={14} style={{ color: COLORS.terracotta }} />
                 </button>
               </div>
             )}
@@ -351,7 +337,7 @@ function DestinationInput({ value, onChange }: { value: string; onChange: (v: st
   const [query, setQuery] = useState(value);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     setQuery(value);
@@ -389,26 +375,26 @@ function DestinationInput({ value, onChange }: { value: string; onChange: (v: st
         onBlur={() => setTimeout(() => setOpen(false), 150)}
         placeholder="e.g. Positano, Italy"
         className="w-full mt-1 border rounded-lg px-3 py-2 outline-none focus:ring-2"
-        style={{ borderColor: 'rgba(20,33,61,0.2)' }}
+        style={{ borderColor: COLORS.borderDashed }}
         autoComplete="off"
       />
       {open && (
         <div
           className="absolute z-20 w-full mt-1 bg-white border rounded-lg shadow-lg overflow-hidden"
-          style={{ borderColor: 'rgba(20,33,61,0.15)' }}
+          style={{ borderColor: COLORS.borderMedium }}
         >
           {suggestions.map((s, i) => (
             <button
               key={i}
               className="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 flex items-center gap-2 transition"
-              style={{ color: '#14213D' }}
+              style={{ color: COLORS.ink }}
               onMouseDown={() => {
                 onChange(s);
                 setQuery(s);
                 setOpen(false);
               }}
             >
-              <MapPin size={12} style={{ color: '#C4622A', flexShrink: 0 }} />
+              <MapPin size={12} style={{ color: COLORS.terracotta, flexShrink: 0 }} />
               {s}
             </button>
           ))}
@@ -447,7 +433,7 @@ function TripEditor({
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-0 sm:p-6">
       <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full sm:max-w-lg max-h-[92vh] overflow-y-auto p-6">
         <div className="flex items-center justify-between mb-5">
-          <h3 style={{ fontFamily: 'Playfair Display, serif' }} className="text-2xl">
+          <h3 style={{ fontFamily: FONTS.display }} className="text-2xl">
             {trip.title ? 'Edit trip' : 'New trip'}
           </h3>
           <button onClick={onClose} className="p-1.5 rounded-full hover:bg-neutral-100">
@@ -462,7 +448,7 @@ function TripEditor({
               onChange={(e) => set('title', e.target.value)}
               placeholder="e.g. Amalfi Golden Hour"
               className="w-full mt-1 border rounded-lg px-3 py-2 outline-none focus:ring-2"
-              style={{ borderColor: 'rgba(20,33,61,0.2)' }}
+              style={{ borderColor: COLORS.borderDashed }}
             />
           </div>
           <div>
@@ -475,7 +461,7 @@ function TripEditor({
               value={form.theme}
               onChange={(e) => set('theme', e.target.value)}
               className="w-full mt-1 border rounded-lg px-3 py-2 outline-none"
-              style={{ borderColor: 'rgba(20,33,61,0.2)' }}
+              style={{ borderColor: COLORS.borderDashed }}
             >
               {THEMES.map((t) => (
                 <option key={t.id} value={t.id}>
@@ -492,7 +478,7 @@ function TripEditor({
                 value={form.startDate}
                 onChange={(e) => set('startDate', e.target.value)}
                 className="w-full mt-1 border rounded-lg px-3 py-2 outline-none"
-                style={{ borderColor: 'rgba(20,33,61,0.2)' }}
+                style={{ borderColor: COLORS.borderDashed }}
               />
             </div>
             <div>
@@ -502,7 +488,7 @@ function TripEditor({
                 value={form.endDate}
                 onChange={(e) => set('endDate', e.target.value)}
                 className="w-full mt-1 border rounded-lg px-3 py-2 outline-none"
-                style={{ borderColor: 'rgba(20,33,61,0.2)' }}
+                style={{ borderColor: COLORS.borderDashed }}
               />
             </div>
           </div>
@@ -520,7 +506,7 @@ function TripEditor({
                   set('capacity', Math.max(1, Math.min(10, Number(e.target.value) || 1)))
                 }
                 className="w-full mt-1 border rounded-lg px-3 py-2 outline-none"
-                style={{ borderColor: 'rgba(20,33,61,0.2)' }}
+                style={{ borderColor: COLORS.borderDashed }}
               />
             </div>
             <div>
@@ -532,7 +518,7 @@ function TripEditor({
                 onChange={(e) => set('priceFrom', e.target.value)}
                 placeholder="2400"
                 className="w-full mt-1 border rounded-lg px-3 py-2 outline-none"
-                style={{ borderColor: 'rgba(20,33,61,0.2)' }}
+                style={{ borderColor: COLORS.borderDashed }}
               />
             </div>
           </div>
@@ -543,9 +529,9 @@ function TripEditor({
                 onClick={() => set('status', 'draft')}
                 className="flex-1 py-2 rounded-lg text-sm border flex items-center justify-center gap-1.5"
                 style={{
-                  borderColor: '#C4622A',
+                  borderColor: COLORS.terracotta,
                   background: form.status === 'draft' ? 'rgba(196,98,42,0.1)' : 'transparent',
-                  color: '#C4622A',
+                  color: COLORS.terracotta,
                 }}
               >
                 <Lock size={13} /> Draft (private)
@@ -554,9 +540,9 @@ function TripEditor({
                 onClick={() => set('status', 'published')}
                 className="flex-1 py-2 rounded-lg text-sm border flex items-center justify-center gap-1.5"
                 style={{
-                  borderColor: '#2C5F5A',
-                  background: form.status === 'published' ? 'rgba(44,95,90,0.1)' : 'transparent',
-                  color: '#2C5F5A',
+                  borderColor: COLORS.teal,
+                  background: form.status === 'published' ? COLORS.tealTint : 'transparent',
+                  color: COLORS.teal,
                 }}
               >
                 <Globe size={13} /> Published
@@ -572,7 +558,7 @@ function TripEditor({
               onChange={(e) => set('notes', e.target.value)}
               rows={3}
               className="w-full mt-1 border rounded-lg px-3 py-2 outline-none resize-none"
-              style={{ borderColor: 'rgba(20,33,61,0.2)' }}
+              style={{ borderColor: COLORS.borderDashed }}
             />
           </div>
           <div>
@@ -583,7 +569,7 @@ function TripEditor({
               <button
                 onClick={addLink}
                 className="text-xs flex items-center gap-1"
-                style={{ color: '#2C5F5A' }}
+                style={{ color: COLORS.teal }}
               >
                 <Plus size={13} /> Add link
               </button>
@@ -596,17 +582,17 @@ function TripEditor({
                     onChange={(e) => updateLink(i, 'label', e.target.value)}
                     placeholder="Label (e.g. Flights)"
                     className="w-1/3 border rounded-lg px-2 py-1.5 text-sm outline-none"
-                    style={{ borderColor: 'rgba(20,33,61,0.2)' }}
+                    style={{ borderColor: COLORS.borderDashed }}
                   />
                   <input
                     value={l.url}
                     onChange={(e) => updateLink(i, 'url', e.target.value)}
                     placeholder="https://..."
                     className="flex-1 border rounded-lg px-2 py-1.5 text-sm outline-none"
-                    style={{ borderColor: 'rgba(20,33,61,0.2)' }}
+                    style={{ borderColor: COLORS.borderDashed }}
                   />
                   <button onClick={() => removeLink(i)} className="p-1.5">
-                    <X size={14} style={{ color: '#C4622A' }} />
+                    <X size={14} style={{ color: COLORS.terracotta }} />
                   </button>
                 </div>
               ))}
@@ -617,8 +603,8 @@ function TripEditor({
           onClick={() => onSave(form)}
           className="w-full mt-6 py-3 rounded-lg text-white font-medium"
           style={{
-            background: 'linear-gradient(135deg, #2C5F5A, #07325f)',
-            fontFamily: 'DM Sans, sans-serif',
+            background: GRADIENT.solid,
+            fontFamily: FONTS.body,
           }}
         >
           Save trip
@@ -799,14 +785,14 @@ function Advisor({
   return (
     <div
       className="flex flex-col h-[70vh] rounded-2xl border overflow-hidden"
-      style={{ borderColor: 'rgba(20,33,61,0.12)' }}
+      style={{ borderColor: COLORS.border }}
     >
       <div
         className="px-5 py-3 flex items-center gap-2 border-b"
-        style={{ borderColor: 'rgba(20,33,61,0.1)', background: '#07325f' }}
+        style={{ borderColor: COLORS.borderLight, background: COLORS.navy }}
       >
-        <Sparkles size={16} style={{ color: '#C9A227' }} />
-        <span className="text-white text-sm" style={{ fontFamily: 'Playfair Display, serif' }}>
+        <Sparkles size={16} style={{ color: COLORS.gold }} />
+        <span className="text-white text-sm" style={{ fontFamily: FONTS.display }}>
           Travel Advisor
         </span>
       </div>
@@ -826,8 +812,8 @@ function Advisor({
               }`}
               style={{
                 background:
-                  m.role === 'user' ? 'linear-gradient(135deg,#2C5F5A,#07325f)' : '#FFFFFF',
-                border: m.role === 'user' ? 'none' : '1px solid rgba(20,33,61,0.1)',
+                  m.role === 'user' ? GRADIENT.solid : COLORS.white,
+                border: m.role === 'user' ? 'none' : `1px solid ${COLORS.borderLight}`,
               }}
             >
               {m.content}
@@ -843,7 +829,7 @@ function Advisor({
                   });
                 }}
                 className="mt-2 flex items-center gap-1.5 px-4 py-2 rounded-full text-xs text-white font-medium"
-                style={{ background: 'linear-gradient(135deg,#2C5F5A,#07325f)' }}
+                style={{ background: GRADIENT.solid }}
               >
                 <CheckCircle size={13} />
                 Save "{pendingTrips[i].title || 'this trip'}" to Plan
@@ -858,7 +844,7 @@ function Advisor({
                     onClick={() => handleAddActivity(i, activity)}
                     disabled={addingActivity === i}
                     className="mt-2 flex items-center gap-1.5 px-4 py-2 rounded-full text-xs text-white font-medium disabled:opacity-60"
-                    style={{ background: 'linear-gradient(135deg,#2C5F5A,#07325f)' }}
+                    style={{ background: GRADIENT.solid }}
                   >
                     <CheckCircle size={13} />
                     {addingActivity === i
@@ -873,7 +859,7 @@ function Advisor({
           <div className="flex justify-start">
             <div
               className="max-w-[85%] px-4 py-2.5 rounded-2xl text-sm whitespace-pre-wrap text-neutral-800"
-              style={{ background: '#FFFFFF', border: '1px solid rgba(20,33,61,0.1)' }}
+              style={{ background: COLORS.white, border: `1px solid ${COLORS.borderLight}` }}
             >
               {streamingMessage}
             </div>
@@ -883,20 +869,20 @@ function Advisor({
           <div className="text-xs text-neutral-400 pl-1">Advisor is thinking…</div>
         )}
       </div>
-      <div className="p-3 border-t flex gap-2" style={{ borderColor: 'rgba(20,33,61,0.1)' }}>
+      <div className="p-3 border-t flex gap-2" style={{ borderColor: COLORS.borderLight }}>
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && send()}
           placeholder="Ask about a destination, theme, or dates…"
           className="flex-1 border rounded-full px-4 py-2 text-sm outline-none"
-          style={{ borderColor: 'rgba(20,33,61,0.2)' }}
+          style={{ borderColor: COLORS.borderDashed }}
         />
         <button
           onClick={send}
           disabled={loading}
           className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
-          style={{ background: 'linear-gradient(135deg,#2C5F5A,#07325f)' }}
+          style={{ background: GRADIENT.solid }}
         >
           <Send size={15} color="white" />
         </button>
@@ -1043,8 +1029,8 @@ export default function App() {
   return (
     <div
       style={{
-        fontFamily: 'DM Sans, sans-serif',
-        background: '#F7F5F1',
+        fontFamily: FONTS.body,
+        background: COLORS.cloud,
         minHeight: '100vh',
       }}
     >
@@ -1053,15 +1039,15 @@ export default function App() {
       <header
         className="sticky top-0 z-30 border-b backdrop-blur"
         style={{
-          borderColor: 'rgba(20,33,61,0.1)',
+          borderColor: COLORS.borderLight,
           background: 'rgba(247,245,241,0.9)',
         }}
       >
         <div className="max-w-5xl mx-auto px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Compass size={20} style={{ color: '#2C5F5A' }} />
+            <Compass size={20} style={{ color: COLORS.teal }} />
             <span
-              style={{ fontFamily: 'Playfair Display, serif', fontWeight: 700 }}
+              style={{ fontFamily: FONTS.display, fontWeight: 700 }}
               className="text-lg"
             >
               <span style={{ color: '#023047' }}>On The Go</span>{' '}
@@ -1079,8 +1065,8 @@ export default function App() {
                 onClick={() => setTab(n.id)}
                 className="px-3 py-1.5 rounded-full transition"
                 style={{
-                  background: tab === n.id ? '#07325f' : 'transparent',
-                  color: tab === n.id ? 'white' : '#14213D',
+                  background: tab === n.id ? COLORS.navy : 'transparent',
+                  color: tab === n.id ? 'white' : COLORS.ink,
                 }}
               >
                 {n.label}
@@ -1096,13 +1082,13 @@ export default function App() {
             <div className="mb-6">
               <div
                 className="text-xs uppercase tracking-[0.25em]"
-                style={{ color: '#C4622A', fontFamily: 'DM Mono, monospace' }}
+                style={{ color: COLORS.terracotta, fontFamily: FONTS.mono }}
               >
                 Small-group · Never more than 10
               </div>
               <h1
                 className="text-3xl sm:text-4xl mt-1"
-                style={{ fontFamily: 'Playfair Display, serif', color: '#14213D' }}
+                style={{ fontFamily: FONTS.display, color: COLORS.ink }}
               >
                 Trips worth clearing your calendar for
               </h1>
@@ -1112,7 +1098,7 @@ export default function App() {
             ) : published.length === 0 ? (
               <div
                 className="rounded-2xl border border-dashed p-10 text-center"
-                style={{ borderColor: 'rgba(20,33,61,0.2)' }}
+                style={{ borderColor: COLORS.borderDashed }}
               >
                 <p className="text-neutral-500">
                   No published trips yet — publish one from the Plan tab to see it here.
@@ -1141,13 +1127,13 @@ export default function App() {
               <div>
                 <div
                   className="text-xs uppercase tracking-[0.25em]"
-                  style={{ color: '#C4622A', fontFamily: 'DM Mono, monospace' }}
+                  style={{ color: COLORS.terracotta, fontFamily: FONTS.mono }}
                 >
                   Private · 2027 planning
                 </div>
                 <h1
                   className="text-3xl sm:text-4xl mt-1"
-                  style={{ fontFamily: 'Playfair Display, serif', color: '#14213D' }}
+                  style={{ fontFamily: FONTS.display, color: COLORS.ink }}
                 >
                   Your trip roster
                 </h1>
@@ -1155,7 +1141,7 @@ export default function App() {
               <button
                 onClick={() => setEditing(emptyTrip())}
                 className="px-4 py-2.5 rounded-full text-white text-sm flex items-center gap-1.5"
-                style={{ background: 'linear-gradient(135deg,#2C5F5A,#07325f)' }}
+                style={{ background: GRADIENT.solid }}
               >
                 <Plus size={15} /> New trip
               </button>
@@ -1165,7 +1151,7 @@ export default function App() {
             ) : trips.length === 0 ? (
               <div
                 className="rounded-2xl border border-dashed p-10 text-center"
-                style={{ borderColor: 'rgba(20,33,61,0.2)' }}
+                style={{ borderColor: COLORS.borderDashed }}
               >
                 <p className="text-neutral-500">Nothing planned yet. Start your first 2027 trip.</p>
               </div>
@@ -1194,13 +1180,13 @@ export default function App() {
           <div className="mb-5">
             <div
               className="text-xs uppercase tracking-[0.25em]"
-              style={{ color: '#C4622A', fontFamily: 'DM Mono, monospace' }}
+              style={{ color: COLORS.terracotta, fontFamily: FONTS.mono }}
             >
               AI-backed
             </div>
             <h1
               className="text-3xl sm:text-4xl mt-1"
-              style={{ fontFamily: 'Playfair Display, serif', color: '#14213D' }}
+              style={{ fontFamily: FONTS.display, color: COLORS.ink }}
             >
               Plan out loud
             </h1>

@@ -1,11 +1,4 @@
-const THEMES = [
-  { id: 'coastal-reset', label: 'Coastal Reset' },
-  { id: 'culinary-crawl', label: 'Culinary Crawl' },
-  { id: 'wellness-retreat', label: 'Wellness Retreat' },
-  { id: 'city-immersion', label: 'City Immersion' },
-  { id: 'adventure-edge', label: 'Adventure Edge' },
-  { id: 'slow-village', label: 'Slow Village' },
-];
+import { THEMES } from '@/utils/theme';
 
 function fmtDate(d: string) {
   if (!d) return 'TBD';

@@ -24,18 +24,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { toast, Toaster } from 'sonner';
-
-const FONT_LINK =
-  'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:wght@400;500;700&family=DM+Mono:wght@400;500&display=swap';
-
-const THEMES = [
-  { id: 'coastal-reset', label: 'Coastal Reset', icon: '〜' },
-  { id: 'culinary-crawl', label: 'Culinary Crawl', icon: '✦' },
-  { id: 'wellness-retreat', label: 'Wellness Retreat', icon: '◎' },
-  { id: 'city-immersion', label: 'City Immersion', icon: '▣' },
-  { id: 'adventure-edge', label: 'Adventure Edge', icon: '▲' },
-  { id: 'slow-village', label: 'Slow Village', icon: '◈' },
-];
+import { COLORS, GRADIENT, FONTS, FONT_LINK, THEMES } from '@/utils/theme';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -283,16 +272,16 @@ function StampBadge({ theme }: { theme: string }) {
     <div
       className="shrink-0 rounded-full border-2 w-14 h-14 sm:w-20 sm:h-20 flex flex-col items-center justify-center text-center select-none"
       style={{
-        borderColor: '#C9A227',
+        borderColor: COLORS.gold,
         borderStyle: 'dashed',
-        color: '#C9A227',
-        background: 'rgba(201,162,39,0.06)',
+        color: COLORS.gold,
+        background: COLORS.goldTint,
       }}
     >
       <span className="text-base sm:text-xl">{t.icon}</span>
       <span
         className="text-[7px] sm:text-[8px] tracking-widest uppercase mt-0.5"
-        style={{ fontFamily: 'DM Mono, monospace' }}
+        style={{ fontFamily: FONTS.mono }}
       >
         {t.label.split(' ')[0]}
       </span>
@@ -315,17 +304,17 @@ function CopyButton({ text, light }: { text: string; light?: boolean }) {
       className="p-1.5 rounded-lg transition shrink-0"
       style={{
         background: copied
-          ? 'rgba(74,222,128,0.15)'
+          ? COLORS.successTint
           : light
-            ? 'rgba(255,255,255,0.1)'
-            : 'rgba(44,95,90,0.08)',
+            ? COLORS.whiteTint10
+            : COLORS.tealTint08,
       }}
       title="Copy"
     >
       {copied ? (
         <Check size={13} color="#4ade80" />
       ) : (
-        <Copy size={13} color={light ? 'rgba(255,255,255,0.7)' : '#2C5F5A'} />
+        <Copy size={13} color={light ? COLORS.whiteTint70 : COLORS.teal} />
       )}
     </button>
   );
@@ -338,9 +327,9 @@ function ConfBadge({ number }: { number: string }) {
     <span
       className="text-xs px-2 py-1 rounded-lg inline-block"
       style={{
-        fontFamily: 'DM Mono, monospace',
-        background: 'rgba(44,95,90,0.07)',
-        color: '#2C5F5A',
+        fontFamily: FONTS.mono,
+        background: COLORS.tealTint07,
+        color: COLORS.teal,
       }}
     >
       #{number}
@@ -353,7 +342,7 @@ function EmptyState({ message, hint }: { message: string; hint: string }) {
   return (
     <div
       className="rounded-2xl border border-dashed p-12 text-center"
-      style={{ borderColor: 'rgba(20,33,61,0.15)' }}
+      style={{ borderColor: COLORS.borderMedium }}
     >
       <p className="text-neutral-600 font-medium">{message}</p>
       <p className="text-neutral-400 text-sm mt-1 max-w-sm mx-auto">{hint}</p>
@@ -660,7 +649,7 @@ function AddEntryModal({
 
   const inputCls =
     'w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-teal-500';
-  const inputStyle = { borderColor: 'rgba(20,33,61,0.2)' };
+  const inputStyle = { borderColor: COLORS.borderDashed };
   const labelCls = 'text-xs uppercase tracking-wide text-neutral-500';
 
   const handleSave = () => {
@@ -710,7 +699,7 @@ function AddEntryModal({
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4">
           <h3
-            style={{ fontFamily: 'Playfair Display, serif' }}
+            style={{ fontFamily: FONTS.display }}
             className="text-xl text-neutral-900"
           >
             {isEditing
@@ -731,8 +720,8 @@ function AddEntryModal({
                 onClick={() => setTab(t.id)}
                 className="flex-1 py-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition"
                 style={{
-                  background: tab === t.id ? '#07325f' : 'rgba(20,33,61,0.05)',
-                  color: tab === t.id ? 'white' : '#6B6B6B',
+                  background: tab === t.id ? COLORS.navy : COLORS.borderFaint,
+                  color: tab === t.id ? 'white' : COLORS.gray,
                 }}
               >
                 {t.icon}
@@ -774,7 +763,7 @@ function AddEntryModal({
                 placeholder="Paste confirmation text here…"
                 rows={8}
                 className={`${inputCls} resize-none`}
-                style={{ ...inputStyle, fontFamily: 'DM Mono, monospace', fontSize: '12px' }}
+                style={{ ...inputStyle, fontFamily: FONTS.mono, fontSize: '12px' }}
               />
             </div>
           )}
@@ -788,7 +777,7 @@ function AddEntryModal({
                       auto-detects the type, same as the URL/text tabs. Bypasses the form below. */}
                   <div
                     className="rounded-xl border border-dashed p-4 text-center"
-                    style={{ borderColor: 'rgba(44,95,90,0.3)' }}
+                    style={{ borderColor: COLORS.tealTint30 }}
                   >
                     <label className="cursor-pointer block">
                       <input
@@ -802,7 +791,7 @@ function AddEntryModal({
                           e.target.value = '';
                         }}
                       />
-                      <span className="text-sm font-medium flex items-center justify-center gap-2" style={{ color: '#2C5F5A' }}>
+                      <span className="text-sm font-medium flex items-center justify-center gap-2" style={{ color: COLORS.teal }}>
                         {attachmentMutation.isPending ? (
                           <>
                             <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
@@ -821,9 +810,9 @@ function AddEntryModal({
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="flex-1 h-px" style={{ background: 'rgba(20,33,61,0.1)' }} />
+                    <div className="flex-1 h-px" style={{ background: COLORS.borderLight }} />
                     <span className="text-xs text-neutral-400">or fill in the details</span>
-                    <div className="flex-1 h-px" style={{ background: 'rgba(20,33,61,0.1)' }} />
+                    <div className="flex-1 h-px" style={{ background: COLORS.borderLight }} />
                   </div>
 
                   {/* Type selector */}
@@ -834,9 +823,9 @@ function AddEntryModal({
                         onClick={() => setManualType(mt.id)}
                         className="px-3 py-1.5 rounded-full text-xs font-medium border transition"
                         style={{
-                          borderColor: manualType === mt.id ? '#2C5F5A' : 'rgba(20,33,61,0.15)',
-                          background: manualType === mt.id ? 'rgba(44,95,90,0.08)' : 'transparent',
-                          color: manualType === mt.id ? '#2C5F5A' : '#6B6B6B',
+                          borderColor: manualType === mt.id ? COLORS.teal : COLORS.borderMedium,
+                          background: manualType === mt.id ? COLORS.tealTint08 : 'transparent',
+                          color: manualType === mt.id ? COLORS.teal : COLORS.gray,
                         }}
                       >
                         {mt.label}
@@ -1153,7 +1142,7 @@ function AddEntryModal({
                 }}
                 disabled={isPending}
                 className="py-2.5 px-4 rounded-xl border text-sm disabled:opacity-50"
-                style={{ borderColor: 'rgba(196,98,42,0.3)', color: '#C4622A' }}
+                style={{ borderColor: COLORS.terracottaTint30, color: COLORS.terracotta }}
               >
                 <Trash2 size={14} />
               </button>
@@ -1161,7 +1150,7 @@ function AddEntryModal({
             <button
               onClick={onClose}
               className="flex-1 py-2.5 rounded-xl border text-sm text-neutral-600"
-              style={{ borderColor: 'rgba(20,33,61,0.2)' }}
+              style={{ borderColor: COLORS.borderDashed }}
             >
               Cancel
             </button>
@@ -1169,7 +1158,7 @@ function AddEntryModal({
               onClick={handleSave}
               disabled={!canSave || isPending}
               className="flex-1 py-2.5 rounded-xl text-white text-sm font-medium flex items-center justify-center gap-2 disabled:opacity-50"
-              style={{ background: 'linear-gradient(135deg,#2C5F5A,#07325f)' }}
+              style={{ background: GRADIENT.solid }}
             >
               {isPending ? (
                 <>
@@ -1216,7 +1205,7 @@ function AddButton({ onClick }: { onClick: () => void }) {
     <button
       onClick={onClick}
       className="text-xs flex items-center gap-1.5 px-3 py-2 rounded-full border transition hover:bg-teal-50"
-      style={{ borderColor: 'rgba(44,95,90,0.3)', color: '#2C5F5A' }}
+      style={{ borderColor: COLORS.tealTint30, color: COLORS.teal }}
     >
       <Plus size={12} /> Add
     </button>
@@ -1228,10 +1217,10 @@ function EntryActions({ onEdit, onDelete }: { onEdit: () => void; onDelete: () =
   return (
     <div className="flex gap-1 shrink-0">
       <button onClick={onEdit} className="p-1.5 rounded-full hover:bg-neutral-100 transition">
-        <Pencil size={13} style={{ color: '#14213D' }} />
+        <Pencil size={13} style={{ color: COLORS.ink }} />
       </button>
       <button onClick={onDelete} className="p-1.5 rounded-full hover:bg-neutral-100 transition">
-        <Trash2 size={13} style={{ color: '#C4622A' }} />
+        <Trash2 size={13} style={{ color: COLORS.terracotta }} />
       </button>
     </div>
   );
@@ -1353,7 +1342,7 @@ export default function TripDetailPage() {
     return (
       <div
         className="min-h-screen flex items-center justify-center"
-        style={{ background: '#F7F5F1', fontFamily: 'DM Sans, sans-serif' }}
+        style={{ background: COLORS.cloud, fontFamily: FONTS.body }}
       >
         <link rel="stylesheet" href={FONT_LINK} />
         <p className="text-neutral-400">Loading trip…</p>
@@ -1374,14 +1363,14 @@ export default function TripDetailPage() {
   ];
 
   return (
-    <div style={{ fontFamily: 'DM Sans, sans-serif', background: '#F7F5F1', minHeight: '100vh' }}>
+    <div style={{ fontFamily: FONTS.body, background: COLORS.cloud, minHeight: '100vh' }}>
       <link rel="stylesheet" href={FONT_LINK} />
       <Toaster position="top-right" richColors />
 
       {/* ───── HEADER ───── */}
       <div
         className="relative overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #2C5F5A 0%, #07325f 60%)' }}
+        style={{ background: GRADIENT.header }}
       >
         <div className="max-w-5xl mx-auto px-4 sm:px-5 pt-6 pb-16">
           <Link
@@ -1395,13 +1384,13 @@ export default function TripDetailPage() {
             <div className="flex-1 min-w-0">
               <div
                 className="text-[10px] uppercase tracking-[0.2em] text-white/50 mb-0.5"
-                style={{ fontFamily: 'DM Mono, monospace' }}
+                style={{ fontFamily: FONTS.mono }}
               >
                 {themeLabel}
               </div>
               <h1
                 className="text-white text-2xl sm:text-4xl leading-tight"
-                style={{ fontFamily: 'Playfair Display, serif', fontWeight: 600 }}
+                style={{ fontFamily: FONTS.display, fontWeight: 600 }}
               >
                 {trip.title || 'Untitled trip'}
               </h1>
@@ -1419,7 +1408,7 @@ export default function TripDetailPage() {
                   Up to {trip.capacity}
                 </span>
                 {trip.priceFrom && (
-                  <span style={{ fontFamily: 'DM Mono, monospace', color: '#C9A227' }}>
+                  <span style={{ fontFamily: FONTS.mono, color: COLORS.gold }}>
                     from ${trip.priceFrom}
                   </span>
                 )}
@@ -1433,8 +1422,8 @@ export default function TripDetailPage() {
           <div
             className="absolute bottom-4 right-3 sm:right-6 rounded-2xl flex items-center"
             style={{
-              background: 'rgba(255,255,255,0.12)',
-              border: '1px solid rgba(255,255,255,0.18)',
+              background: COLORS.whiteTint12,
+              border: `1px solid ${COLORS.whiteTint18}`,
               backdropFilter: 'blur(10px)',
               WebkitBackdropFilter: 'blur(10px)',
             }}
@@ -1444,14 +1433,14 @@ export default function TripDetailPage() {
               <img src={weather.icon} alt="" className="w-6 h-6" />
               <span
                 className="text-white text-sm font-semibold"
-                style={{ fontFamily: 'DM Mono, monospace' }}
+                style={{ fontFamily: FONTS.mono }}
               >
                 {Math.round(weather.temp_f)}°F
               </span>
               {weather.localtime && (
                 <span
                   className="text-white/50 text-xs flex items-center gap-0.5"
-                  style={{ fontFamily: 'DM Mono, monospace' }}
+                  style={{ fontFamily: FONTS.mono }}
                 >
                   <Clock size={10} />
                   {weather.localtime}
@@ -1464,7 +1453,7 @@ export default function TripDetailPage() {
               <div>
                 <div
                   className="text-white text-xl font-semibold leading-none"
-                  style={{ fontFamily: 'DM Mono, monospace' }}
+                  style={{ fontFamily: FONTS.mono }}
                 >
                   {Math.round(weather.temp_f)}°F
                 </div>
@@ -1474,8 +1463,8 @@ export default function TripDetailPage() {
                 <div
                   className="pl-3 flex items-center gap-1 text-white/40 text-xs"
                   style={{
-                    borderLeft: '1px solid rgba(255,255,255,0.15)',
-                    fontFamily: 'DM Mono, monospace',
+                    borderLeft: `1px solid ${COLORS.whiteTint15}`,
+                    fontFamily: FONTS.mono,
                   }}
                 >
                   <Clock size={11} />
@@ -1490,7 +1479,7 @@ export default function TripDetailPage() {
       {/* ───── TABS ───── */}
       <div
         className="sticky top-0 z-10 border-b overflow-x-auto scrollbar-none"
-        style={{ borderColor: 'rgba(20,33,61,0.1)', background: '#FFFFFF' }}
+        style={{ borderColor: COLORS.borderLight, background: COLORS.white }}
       >
         <div className="max-w-5xl mx-auto px-4 sm:px-5 flex">
           {TABS.map((tab) => (
@@ -1499,8 +1488,8 @@ export default function TripDetailPage() {
               onClick={() => setActiveTab(tab.id)}
               className="px-3 sm:px-5 py-3.5 text-xs sm:text-sm font-medium border-b-2 transition whitespace-nowrap"
               style={{
-                borderColor: activeTab === tab.id ? '#2C5F5A' : 'transparent',
-                color: activeTab === tab.id ? '#2C5F5A' : '#6B6B6B',
+                borderColor: activeTab === tab.id ? COLORS.teal : 'transparent',
+                color: activeTab === tab.id ? COLORS.teal : COLORS.gray,
               }}
             >
               {tab.label}
@@ -1518,11 +1507,11 @@ export default function TripDetailPage() {
             {trip.notes && (
               <div
                 className="rounded-2xl border p-5 sm:p-6"
-                style={{ borderColor: 'rgba(20,33,61,0.12)', background: '#FFFFFF' }}
+                style={{ borderColor: COLORS.border, background: COLORS.white }}
               >
                 <div
                   className="text-[9px] uppercase tracking-widest mb-3"
-                  style={{ fontFamily: 'DM Mono, monospace', color: '#C9A227' }}
+                  style={{ fontFamily: FONTS.mono, color: COLORS.gold }}
                 >
                   Overview
                 </div>
@@ -1532,13 +1521,13 @@ export default function TripDetailPage() {
                       key={i}
                       className="flex items-start gap-3 py-2.5"
                       style={{
-                        borderBottom: i < arr.length - 1 ? '1px solid rgba(20,33,61,0.06)' : 'none',
+                        borderBottom: i < arr.length - 1 ? `1px solid ${COLORS.borderFaint06}` : 'none',
                       }}
                     >
                       {row.day !== null && (
                         <div
                           className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold"
-                          style={{ background: 'rgba(44,95,90,0.1)', color: '#2C5F5A' }}
+                          style={{ background: COLORS.tealTint, color: COLORS.teal }}
                         >
                           {row.day}
                         </div>
@@ -1562,15 +1551,15 @@ export default function TripDetailPage() {
                 <div
                   key={s.label}
                   className="rounded-xl border p-4"
-                  style={{ borderColor: 'rgba(20,33,61,0.1)', background: '#FFFFFF' }}
+                  style={{ borderColor: COLORS.borderLight, background: COLORS.white }}
                 >
                   <div
                     className="text-[9px] uppercase tracking-widest text-neutral-400"
-                    style={{ fontFamily: 'DM Mono, monospace' }}
+                    style={{ fontFamily: FONTS.mono }}
                   >
                     {s.label}
                   </div>
-                  <div className="text-sm font-medium mt-1" style={{ color: '#14213D' }}>
+                  <div className="text-sm font-medium mt-1" style={{ color: COLORS.ink }}>
                     {s.value}
                   </div>
                 </div>
@@ -1581,20 +1570,20 @@ export default function TripDetailPage() {
                 className="rounded-xl border p-4 text-left transition hover:opacity-80 disabled:opacity-50"
                 style={{
                   borderColor:
-                    trip.status === 'published' ? 'rgba(44,95,90,0.3)' : 'rgba(196,98,42,0.3)',
+                    trip.status === 'published' ? COLORS.tealTint30 : COLORS.terracottaTint30,
                   background:
-                    trip.status === 'published' ? 'rgba(44,95,90,0.05)' : 'rgba(196,98,42,0.05)',
+                    trip.status === 'published' ? COLORS.tealTint05 : COLORS.terracottaTint05,
                 }}
               >
                 <div
                   className="text-[9px] uppercase tracking-widest text-neutral-400"
-                  style={{ fontFamily: 'DM Mono, monospace' }}
+                  style={{ fontFamily: FONTS.mono }}
                 >
                   Status
                 </div>
                 <div
                   className="text-sm font-medium mt-1 flex items-center gap-1.5"
-                  style={{ color: trip.status === 'published' ? '#2C5F5A' : '#C4622A' }}
+                  style={{ color: trip.status === 'published' ? COLORS.teal : COLORS.terracotta }}
                 >
                   {trip.status === 'published' ? <Globe size={13} /> : <Lock size={13} />}
                   {trip.status === 'published' ? 'Published' : 'Draft'}
@@ -1609,11 +1598,11 @@ export default function TripDetailPage() {
             {trip.affiliateLinks?.length > 0 && (
               <div
                 className="rounded-2xl border p-5"
-                style={{ borderColor: 'rgba(20,33,61,0.12)', background: '#FFFFFF' }}
+                style={{ borderColor: COLORS.border, background: COLORS.white }}
               >
                 <div
                   className="text-[9px] uppercase tracking-widest mb-3 flex items-center gap-1.5"
-                  style={{ fontFamily: 'DM Mono, monospace', color: '#C9A227' }}
+                  style={{ fontFamily: FONTS.mono, color: COLORS.gold }}
                 >
                   <Link2 size={10} /> Links
                 </div>
@@ -1625,7 +1614,7 @@ export default function TripDetailPage() {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs px-3 py-1.5 rounded-full border flex items-center gap-1 hover:bg-neutral-50 transition"
-                      style={{ borderColor: '#C9A227', color: '#8a6c1a' }}
+                      style={{ borderColor: COLORS.gold, color: COLORS.goldDark }}
                     >
                       {l.label}
                     </a>
@@ -1637,31 +1626,31 @@ export default function TripDetailPage() {
             {/* Trip inbox — email forwarding */}
             <div
               className="rounded-2xl overflow-hidden"
-              style={{ background: 'linear-gradient(135deg, #2C5F5A 0%, #07325f 80%)' }}
+              style={{ background: GRADIENT.headerAlt }}
             >
               <div className="p-5 sm:p-6">
                 <div className="flex items-center gap-2 mb-1">
-                  <Mail size={14} style={{ color: '#C9A227' }} />
+                  <Mail size={14} style={{ color: COLORS.gold }} />
                   <span
                     className="text-[9px] uppercase tracking-widest text-white/50"
-                    style={{ fontFamily: 'DM Mono, monospace' }}
+                    style={{ fontFamily: FONTS.mono }}
                   >
                     Trip Inbox
                   </span>
                 </div>
                 <h3
                   className="text-white text-lg mb-3"
-                  style={{ fontFamily: 'Playfair Display, serif' }}
+                  style={{ fontFamily: FONTS.display }}
                 >
                   Forward confirmations here
                 </h3>
                 <div
                   className="flex items-center gap-2 rounded-xl px-3 py-2.5 mb-4"
-                  style={{ background: 'rgba(0,0,0,0.25)' }}
+                  style={{ background: COLORS.shadowMedium }}
                 >
                   <span
                     className="flex-1 text-white text-xs sm:text-sm truncate"
-                    style={{ fontFamily: 'DM Mono, monospace' }}
+                    style={{ fontFamily: FONTS.mono }}
                   >
                     {tripEmail}
                   </span>
@@ -1683,13 +1672,13 @@ export default function TripDetailPage() {
               <div
                 className="px-5 sm:px-6 py-3"
                 style={{
-                  borderTop: '1px solid rgba(255,255,255,0.08)',
-                  background: 'rgba(0,0,0,0.15)',
+                  borderTop: `1px solid ${COLORS.whiteTint08}`,
+                  background: COLORS.shadowLight,
                 }}
               >
                 <p
                   className="text-white/30 text-[10px]"
-                  style={{ fontFamily: 'DM Mono, monospace' }}
+                  style={{ fontFamily: FONTS.mono }}
                 >
                   Postmark webhook → /api/postmark-inbound
                 </p>
@@ -1700,7 +1689,7 @@ export default function TripDetailPage() {
             <button
               onClick={() => setShowAddModal(true)}
               className="w-full rounded-2xl border-2 border-dashed py-4 text-sm font-medium flex items-center justify-center gap-2 hover:bg-white transition"
-              style={{ borderColor: 'rgba(44,95,90,0.25)', color: '#2C5F5A' }}
+              style={{ borderColor: COLORS.tealTint25, color: COLORS.teal }}
             >
               <Plus size={15} /> Add stays, flights, tickets or activities
             </button>
@@ -1713,7 +1702,7 @@ export default function TripDetailPage() {
             <div className="flex items-center justify-between mb-6">
               <h2
                 className="text-2xl"
-                style={{ fontFamily: 'Playfair Display, serif', color: '#14213D' }}
+                style={{ fontFamily: FONTS.display, color: COLORS.ink }}
               >
                 Accommodations
               </h2>
@@ -1730,12 +1719,12 @@ export default function TripDetailPage() {
                   <div
                     key={stay.id}
                     className="rounded-2xl border p-5"
-                    style={{ borderColor: 'rgba(20,33,61,0.12)', background: '#FFFFFF' }}
+                    style={{ borderColor: COLORS.border, background: COLORS.white }}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <h3
                         className="text-lg font-semibold"
-                        style={{ fontFamily: 'Playfair Display, serif', color: '#14213D' }}
+                        style={{ fontFamily: FONTS.display, color: COLORS.ink }}
                       >
                         {stay.name || 'Unnamed stay'}
                       </h3>
@@ -1785,7 +1774,7 @@ export default function TripDetailPage() {
             <div className="flex items-center justify-between mb-6">
               <h2
                 className="text-2xl"
-                style={{ fontFamily: 'Playfair Display, serif', color: '#14213D' }}
+                style={{ fontFamily: FONTS.display, color: COLORS.ink }}
               >
                 Flights & Transfers
               </h2>
@@ -1802,15 +1791,15 @@ export default function TripDetailPage() {
                   <div
                     key={leg.id}
                     className="rounded-2xl border p-5"
-                    style={{ borderColor: 'rgba(20,33,61,0.12)', background: '#FFFFFF' }}
+                    style={{ borderColor: COLORS.border, background: COLORS.white }}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <span
                         className="text-[10px] uppercase tracking-widest px-2 py-1 rounded-full"
                         style={{
-                          fontFamily: 'DM Mono, monospace',
-                          background: 'rgba(44,95,90,0.1)',
-                          color: '#2C5F5A',
+                          fontFamily: FONTS.mono,
+                          background: COLORS.tealTint,
+                          color: COLORS.teal,
                         }}
                       >
                         {leg.type || 'Flight'}
@@ -1826,7 +1815,7 @@ export default function TripDetailPage() {
                     </div>
                     <div
                       className="flex items-center gap-3 text-lg font-medium mt-3"
-                      style={{ fontFamily: 'Playfair Display, serif', color: '#14213D' }}
+                      style={{ fontFamily: FONTS.display, color: COLORS.ink }}
                     >
                       <span>{leg.departureLocation || '—'}</span>
                       <span className="text-neutral-300 text-2xl">→</span>
@@ -1865,7 +1854,7 @@ export default function TripDetailPage() {
             <div className="flex items-center justify-between mb-6">
               <h2
                 className="text-2xl"
-                style={{ fontFamily: 'Playfair Display, serif', color: '#14213D' }}
+                style={{ fontFamily: FONTS.display, color: COLORS.ink }}
               >
                 Day-by-Day Itinerary
               </h2>
@@ -1879,40 +1868,40 @@ export default function TripDetailPage() {
             ) : (
               <div
                 className="relative pl-5 border-l-2"
-                style={{ borderColor: 'rgba(44,95,90,0.2)' }}
+                style={{ borderColor: COLORS.tealTint20 }}
               >
                 {unifiedTimeline.map((entry, idx) => {
                   const prevEntry = idx > 0 ? unifiedTimeline[idx - 1] : null;
                   const showDate = !prevEntry || entry.date !== prevEntry.date;
                   const sourceBg: Record<string, string> = {
-                    stay: 'rgba(44,95,90,0.1)',
-                    transportation: 'rgba(7,50,95,0.1)',
-                    ticket: 'rgba(201,162,39,0.12)',
-                    activity: 'rgba(196,98,42,0.1)',
+                    stay: COLORS.tealTint,
+                    transportation: COLORS.navyTint,
+                    ticket: COLORS.goldTint12,
+                    activity: COLORS.terracottaTint,
                   };
                   const sourceColor: Record<string, string> = {
-                    stay: '#2C5F5A',
-                    transportation: '#07325f',
-                    ticket: '#8a6c1a',
-                    activity: '#C4622A',
+                    stay: COLORS.teal,
+                    transportation: COLORS.navy,
+                    ticket: COLORS.goldDark,
+                    activity: COLORS.terracotta,
                   };
                   return (
                     <div key={entry.key} className="mb-4">
                       {showDate && (
                         <div
                           className="text-[10px] uppercase tracking-widest mb-2 -ml-5 pl-3 flex items-center gap-2"
-                          style={{ fontFamily: 'DM Mono, monospace', color: '#C4622A' }}
+                          style={{ fontFamily: FONTS.mono, color: COLORS.terracotta }}
                         >
                           <span
                             className="w-2 h-2 rounded-full shrink-0"
-                            style={{ background: '#C4622A' }}
+                            style={{ background: COLORS.terracotta }}
                           />
                           {fmtDate(entry.date)}
                         </div>
                       )}
                       <div
                         className="rounded-2xl border p-4"
-                        style={{ borderColor: 'rgba(20,33,61,0.12)', background: '#FFFFFF' }}
+                        style={{ borderColor: COLORS.border, background: COLORS.white }}
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex items-center gap-2 flex-wrap flex-1">
@@ -1920,7 +1909,7 @@ export default function TripDetailPage() {
                               <span
                                 className="text-[9px] uppercase tracking-widest px-1.5 py-0.5 rounded-full shrink-0"
                                 style={{
-                                  fontFamily: 'DM Mono, monospace',
+                                  fontFamily: FONTS.mono,
                                   background: sourceBg[entry.source],
                                   color: sourceColor[entry.source],
                                 }}
@@ -1928,7 +1917,7 @@ export default function TripDetailPage() {
                                 {entry.badge}
                               </span>
                             )}
-                            <h3 className="text-sm font-semibold" style={{ color: '#14213D' }}>
+                            <h3 className="text-sm font-semibold" style={{ color: COLORS.ink }}>
                               {entry.title}
                             </h3>
                           </div>
@@ -1939,7 +1928,7 @@ export default function TripDetailPage() {
                               entry.time !== '23:59' && (
                                 <span
                                   className="text-xs"
-                                  style={{ fontFamily: 'DM Mono, monospace', color: '#6B6B6B' }}
+                                  style={{ fontFamily: FONTS.mono, color: COLORS.gray }}
                                 >
                                   {entry.time}
                                 </span>
@@ -1997,7 +1986,7 @@ export default function TripDetailPage() {
             <div className="flex items-center justify-between mb-6">
               <h2
                 className="text-2xl"
-                style={{ fontFamily: 'Playfair Display, serif', color: '#14213D' }}
+                style={{ fontFamily: FONTS.display, color: COLORS.ink }}
               >
                 Tours & Reservations
               </h2>
@@ -2014,12 +2003,12 @@ export default function TripDetailPage() {
                   <div
                     key={ticket.id}
                     className="rounded-2xl border p-5"
-                    style={{ borderColor: 'rgba(20,33,61,0.12)', background: '#FFFFFF' }}
+                    style={{ borderColor: COLORS.border, background: COLORS.white }}
                   >
                     <div className="flex items-start justify-between gap-2">
                       <h3
                         className="text-base font-semibold"
-                        style={{ fontFamily: 'Playfair Display, serif', color: '#14213D' }}
+                        style={{ fontFamily: FONTS.display, color: COLORS.ink }}
                       >
                         {ticket.name || 'Unnamed ticket'}
                       </h3>
@@ -2033,7 +2022,7 @@ export default function TripDetailPage() {
                     <div className="flex flex-wrap gap-3 text-sm text-neutral-600 mt-2">
                       {ticket.date && <span>{fmtDate(ticket.date)}</span>}
                       {ticket.time && (
-                        <span style={{ fontFamily: 'DM Mono, monospace' }}>{ticket.time}</span>
+                        <span style={{ fontFamily: FONTS.mono }}>{ticket.time}</span>
                       )}
                     </div>
                     {ticket.location && (
