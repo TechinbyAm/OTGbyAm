@@ -16,7 +16,7 @@
 
 ## ~~Missing DESIGN.md~~ — DONE (2026-08-17)
 
-`DESIGN.md` written at the project root, ahead of schedule (originally sequenced after T1/theme.ts extraction — done directly from `apps/mobile/src/utils/theme.ts` plus the design review's documented patterns instead, since DESIGN.md defining the system first is cleaner than waiting for code to consolidate it). Keep the maintenance habit below in mind for future patterns.
+`DESIGN.md` written (now living in `docs/`, moved there in the same pass as this note), ahead of schedule (originally sequenced after T1/theme.ts extraction — done directly from `apps/mobile/src/utils/theme.ts` plus the design review's documented patterns instead, since DESIGN.md defining the system first is cleaner than waiting for code to consolidate it). Keep the maintenance habit below in mind for future patterns.
 
 **What:** No `DESIGN.md` exists anywhere in the repo. All design decisions currently live either as hardcoded values inline in `apps/web/src/app/page.tsx` (soon `apps/web/src/utils/theme.ts`), in `apps/mobile/src/utils/theme.ts`, or scattered across individual plan/design docs like this one.
 
@@ -43,3 +43,17 @@
 **Context:** Found during `/plan-devex-review` of the Discovery + Content Creation plan (2026-08-13/17, design doc: `OTGbyAm-amberirvin-none-design-20260813-022136.md`). Pre-existing bug, unrelated to that plan's diff — logged here instead of fixed as part of it.
 
 **Depends on / blocked by:** Nothing.
+
+## Postmark inbound webhook has no origin verification
+
+**What:** `apps/web/src/app/api/postmark-inbound/route.ts` accepts any POST request claiming a valid trip ID (`trip_<id>@...` in the `To` field) with zero authentication — no Postmark signature or shared-secret check.
+
+**Why:** `docs/BACKLOG.md`'s original spec for this feature explicitly called for verifying requests genuinely originate from Postmark; that part was never built. Anyone who knows or guesses a trip's inbound email address (a predictable format) can POST fabricated "confirmation" data that gets parsed by Gemini and inserted into that trip's real bookings.
+
+**Pros:** Closes a real, if currently low-severity, gap — this app is single-tenant/private, so the practical blast radius today is low, but the endpoint is genuinely open to anyone on the internet who can reach it.
+
+**Cons:** Requires knowing Postmark's actual verification mechanism (webhook signing, or a shared secret in the URL/header) and provisioning it — not purely a code change, may need a Postmark dashboard config step too.
+
+**Context:** Found while cross-checking `docs/BACKLOG.md` against the real code (2026-08-18) — the backlog claimed this item was `NOT BUILT` in full; reading the actual route showed the core parse/merge path is built but this specific requirement was silently dropped.
+
+**Depends on / blocked by:** Nothing blocks starting this. Worth doing before this endpoint sees real inbound traffic.

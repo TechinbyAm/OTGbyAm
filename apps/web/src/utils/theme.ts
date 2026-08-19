@@ -3,7 +3,7 @@
 // the two in sync. FONTS differs by platform on purpose: mobile uses Expo
 // font-family identifiers (e.g. `PlayfairDisplay_600SemiBold`), web uses CSS
 // font-family strings loaded via FONT_LINK below.
-// Full reference: DESIGN.md at the project root.
+// Full reference: docs/DESIGN.md.
 
 export const COLORS = {
   ink: '#14213D',
