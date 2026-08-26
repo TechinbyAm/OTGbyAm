@@ -14,3 +14,6 @@ next-env.d.ts
 
 # TypeScript
 *.tsbuildinfo
+
+# Vitest cache
+/.vitest/

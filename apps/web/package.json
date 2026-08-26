@@ -5,7 +5,10 @@
 		"dev": "next dev --port 4000",
 		"build": "next build",
 		"start": "next start",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"test": "yarn test:ui && yarn test:api",
+		"test:ui": "vitest run --config vitest.config.ts",
+		"test:api": "vitest run --config src/app/api/vitest.config.ts"
 	},
 	"dependencies": {
 		"@base-ui/react": "^1.3.0",
