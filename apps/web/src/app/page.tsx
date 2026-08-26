@@ -23,6 +23,10 @@ import useHandleStreamResponse from '@/utils/useHandleStreamResponse';
 import { COLORS, GRADIENT, FONTS, FONT_LINK, THEMES } from '@/utils/theme';
 
 type AffiliateLink = { label: string; url: string };
+// Discovery source links attached via promote-to-trip (T8) — separate from
+// affiliateLinks (revenue-only) and notes (free-text). `platform` is the
+// discovery's origin (ig | tiktok | pinterest | manual).
+type SourceLink = { label: string; url: string; platform: string };
 type Trip = {
   id: string;
   title: string;
@@ -35,6 +39,7 @@ type Trip = {
   priceFrom: string;
   notes: string;
   affiliateLinks: AffiliateLink[];
+  sourceLinks: SourceLink[];
 };
 type Message = { role: 'user' | 'assistant'; content: string };
 
@@ -55,6 +60,7 @@ function emptyTrip(): Trip {
     priceFrom: '',
     notes: '',
     affiliateLinks: [],
+    sourceLinks: [],
   };
 }
 

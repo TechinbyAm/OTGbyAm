@@ -1,6 +1,10 @@
 import fetchToWeb from '@/__create/fetch';
 
 export type AffiliateLink = { label: string; url: string };
+// Discovery source links attached via promote-to-trip (T8) — separate from
+// affiliateLinks (revenue-only) and notes (free-text). `platform` is the
+// discovery's origin (ig | tiktok | pinterest | manual).
+export type SourceLink = { label: string; url: string; platform: string };
 
 export type Trip = {
   id: string;
@@ -14,6 +18,7 @@ export type Trip = {
   priceFrom: string;
   notes: string;
   affiliateLinks: AffiliateLink[];
+  sourceLinks: SourceLink[];
 };
 
 export type TripSuggestion = {
@@ -54,6 +59,7 @@ export function emptyTrip(): Trip {
     priceFrom: '',
     notes: '',
     affiliateLinks: [],
+    sourceLinks: [],
   };
 }
 

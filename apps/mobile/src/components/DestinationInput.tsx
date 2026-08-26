@@ -13,7 +13,7 @@ export function DestinationInput({
 }) {
   const [query, setQuery] = useState(value);
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const fetchSuggestions = useCallback((input: string) => {
     clearTimeout(debounceRef.current);

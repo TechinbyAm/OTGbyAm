@@ -17,6 +17,7 @@ export async function GET() {
       priceFrom: r.price_from,
       notes: r.notes,
       affiliateLinks: r.affiliate_links ?? [],
+      sourceLinks: r.source_links ?? [],
     }));
     return Response.json(trips);
   } catch (e) {
@@ -40,10 +41,11 @@ export async function POST(request: Request) {
       priceFrom,
       notes,
       affiliateLinks,
+      sourceLinks,
     } = body;
     await sql`
-      INSERT INTO trips (id, title, destination, theme, start_date, end_date, capacity, status, price_from, notes, affiliate_links)
-      VALUES (${id}, ${title}, ${destination}, ${theme}, ${startDate}, ${endDate}, ${capacity}, ${status}, ${priceFrom}, ${notes}, ${JSON.stringify(affiliateLinks ?? [])})
+      INSERT INTO trips (id, title, destination, theme, start_date, end_date, capacity, status, price_from, notes, affiliate_links, source_links)
+      VALUES (${id}, ${title}, ${destination}, ${theme}, ${startDate}, ${endDate}, ${capacity}, ${status}, ${priceFrom}, ${notes}, ${JSON.stringify(affiliateLinks ?? [])}, ${JSON.stringify(sourceLinks ?? [])})
     `;
     return Response.json({ success: true });
   } catch (e) {

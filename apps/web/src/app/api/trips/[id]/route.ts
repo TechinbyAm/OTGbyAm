@@ -20,6 +20,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       priceFrom: r.price_from,
       notes: r.notes,
       affiliateLinks: r.affiliate_links ?? [],
+      sourceLinks: r.source_links ?? [],
       tripEmail: r.trip_email ?? '',
     };
     return Response.json(trip);
@@ -44,6 +45,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       priceFrom,
       notes,
       affiliateLinks,
+      sourceLinks,
     } = body;
     await sql`
       UPDATE trips
@@ -57,7 +59,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         status = ${status},
         price_from = ${priceFrom},
         notes = ${notes},
-        affiliate_links = ${JSON.stringify(affiliateLinks ?? [])}
+        affiliate_links = ${JSON.stringify(affiliateLinks ?? [])},
+        source_links = ${JSON.stringify(sourceLinks ?? [])}
       WHERE id = ${id}
     `;
     return Response.json({ success: true });

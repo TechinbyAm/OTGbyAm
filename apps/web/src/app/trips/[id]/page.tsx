@@ -214,6 +214,9 @@ type Trip = {
   notes: string;
   tripEmail: string;
   affiliateLinks: { label: string; url: string }[];
+  // Discovery source links attached via promote-to-trip (T8) — separate from
+  // affiliateLinks (revenue-only) and notes (free-text).
+  sourceLinks: { label: string; url: string; platform: string }[];
 };
 
 type Weather = {

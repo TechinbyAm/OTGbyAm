@@ -14,3 +14,4 @@ This app has no migration runner (no drizzle, no prisma, no `.sql`-file executor
 | File | Applied | Notes |
 |---|---|---|
 | `0001_create_discoveries.sql` | 2026-08-18 | Discovery feature (T2). Applied directly via the Neon connection already in `apps/web/.env`. |
+| `0002_add_source_links_to_trips.sql` | 2026-08-25 | `sourceLinks` field on trips (T3), for promote-to-trip (T8). Applied directly; confirmed existing trips got the `[]` default with no data loss. |
