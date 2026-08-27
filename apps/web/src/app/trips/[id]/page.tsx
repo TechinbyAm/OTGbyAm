@@ -23,7 +23,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import Link from 'next/link';
-import { toast, Toaster } from 'sonner';
+import { toast } from 'sonner';
 import { COLORS, GRADIENT, FONTS, FONT_LINK, THEMES } from '@/utils/theme';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -1368,7 +1368,6 @@ export default function TripDetailPage() {
   return (
     <div style={{ fontFamily: FONTS.body, background: COLORS.cloud, minHeight: '100vh' }}>
       <link rel="stylesheet" href={FONT_LINK} />
-      <Toaster position="top-right" richColors />
 
       {/* ───── HEADER ───── */}
       <div

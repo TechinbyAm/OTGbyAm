@@ -57,3 +57,17 @@
 **Context:** Found while cross-checking `docs/BACKLOG.md` against the real code (2026-08-18) — the backlog claimed this item was `NOT BUILT` in full; reading the actual route showed the core parse/merge path is built but this specific requirement was silently dropped.
 
 **Depends on / blocked by:** Nothing blocks starting this. Worth doing before this endpoint sees real inbound traffic.
+
+## Discovery filter chips are a long keyboard detour to the first card
+
+**What:** Reaching the first discovery card's selection checkbox via keyboard takes ~15 Tab presses from the top of the page — the 7 individually-focusable theme filter chips (`apps/web/src/components/DiscoveryTab.tsx`) account for most of that.
+
+**Why:** Found during manual testing (2026-08-27) — the checkbox itself is fully keyboard-functional (confirmed: focusable, `Space` toggles it, now has a clearly visible gold focus ring after the same testing pass fixed that), but the *path* to it is long enough that a keyboard user can reasonably conclude "this doesn't work" before ever reaching it.
+
+**Pros:** A roving-tabindex pattern (arrow keys move between chips, only one Tab stop for the whole group — the correct ARIA pattern for a set of mutually exclusive filter buttons, similar to a radio group) would cut ~6 tab stops down to 1.
+
+**Cons:** Real interaction-model change to the filter chips, more test surface, not something to bundle into a bug-fix pass — deserves its own scoped pass.
+
+**Context:** Found while investigating a user report that "keyboard doesn't work to check the card" — the checkbox toggle logic itself was correct, but this tab-order length was a real contributing factor to why it felt broken in practice.
+
+**Depends on / blocked by:** Nothing blocks starting this.

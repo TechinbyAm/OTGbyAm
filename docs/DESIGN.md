@@ -74,10 +74,14 @@ Pill-style nav, `rounded-full` buttons, active tab gets navy (`#07325f`) backgro
 `rounded-full`, gradient fill (teal→navy), white text — the same gradient as card headers, reinforcing one consistent "this is an important action" visual language across the app.
 
 ### Checkbox / multi-select (new pattern, introduced for Discovery)
-No checkbox existed anywhere in the app before the Discovery feature. Established convention: unchecked state is a dashed-gold circle (derived from `StampBadge`'s motif, not a generic browser checkbox); checked state fills with the teal→navy gradient. Implementation: a real `<input type="checkbox">`, visually hidden, with the styled circle as its `<label>` — native keyboard focus and screen-reader semantics for free, custom visuals layered on top. Minimum 44×44px tappable hit area regardless of the visible circle's smaller size (proportion to the card).
+No checkbox existed anywhere in the app before the Discovery feature. Established convention: unchecked state is a dashed-gold circle (derived from `StampBadge`'s motif, not a generic browser checkbox); checked state fills with the teal→navy gradient. Implementation: a real `<input type="checkbox">`, visually hidden, with the styled circle as its `<label>` — native keyboard focus and screen-reader semantics for free, custom visuals layered on top. Minimum 44×44px tappable hit area regardless of the visible circle's smaller size (proportion to the card). **Keyboard focus ring is gold** (`#C9A227`, 3px, no offset) — a white ring was tried first and technically worked but was visually imperceptible against the circle's own white dashed border; gold reads clearly against both the gradient header and the circle itself.
 
 ### Toasts / error feedback
-`sonner` (`toast.success(...)` / `toast.error(...)`), already used 5+ places in `apps/web/src/app/page.tsx` and `providers.tsx`. Mobile has `sonner-native` installed but not yet used by any feature. New error states should reuse this, not invent a new pattern. **Known bug, not a pattern to copy:** some existing toast copy says "check the logs panel for details" — no logs panel exists anywhere in the app (see `TODOS.md`).
+`sonner` (`toast.success(...)` / `toast.error(...)` / `toast.info(...)`), single `<Toaster>` mounted once in `apps/web/src/app/providers.tsx` (wraps the whole app via the root layout — **do not add a second `<Toaster>` in a page file**, that was a real bug: two mounted at once silently double-rendered every toast). Mobile has `sonner-native` installed but not yet used by any feature.
+
+Styling is on-brand, not sonner's default `richColors` (that's sonner's own generic green/red/blue palette, not this app's colors): white surface, `COLORS.border`, `1rem` radius, soft shadow, `FONTS.body` — matching the card language — with a 4px colored left-accent border per type: teal (success), terracotta (error), gold (warning), navy (info). Configured via `toastOptions.style`/`toastOptions.classNames` on the single `<Toaster>` in `providers.tsx`, not per-call — new `toast.x(...)` calls anywhere in the app automatically get this styling for free.
+
+**Known bug, not a pattern to copy:** some existing toast copy says "check the logs panel for details" — no logs panel exists anywhere in the app (see `TODOS.md`).
 
 ## Layout conventions
 

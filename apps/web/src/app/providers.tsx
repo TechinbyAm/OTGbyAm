@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { Toaster } from 'sonner';
 import { useState } from 'react';
+import { COLORS, FONTS } from '@/utils/theme';
 
 /** Create a client that persists across re-renders */
 function makeQueryClient() {
@@ -38,7 +39,35 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      <Toaster position="bottom-right" />
+      {/* On-brand toast styling — sonner's `richColors` is its own generic
+          green/red/blue palette, not this app's brand colors. White surface
+          + app border/radius/shadow + DM Sans, with a colored left accent
+          per type (teal/terracotta/navy) instead. Hex values must stay in
+          sync with COLORS in theme.ts — Tailwind arbitrary-value classes
+          can't reference a JS import. */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          unstyled: false,
+          style: {
+            fontFamily: FONTS.body,
+            color: COLORS.ink,
+            background: COLORS.white,
+            border: `1px solid ${COLORS.border}`,
+            borderRadius: '1rem',
+            boxShadow: '0 8px 24px rgba(20,33,61,0.14)',
+            padding: '0.9rem 1.1rem',
+          },
+          classNames: {
+            title: 'text-sm font-medium',
+            description: 'text-sm',
+            success: '![border-left:4px_solid_#2C5F5A]',
+            error: '![border-left:4px_solid_#C4622A]',
+            warning: '![border-left:4px_solid_#C9A227]',
+            info: '![border-left:4px_solid_#07325F]',
+          },
+        }}
+      />
     </QueryClientProvider>
   );
 }
