@@ -2,7 +2,7 @@
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Link2, Trash2, X } from 'lucide-react';
+import { Link2, Trash2, Pencil, X } from 'lucide-react';
 import { COLORS, GRADIENT, FONTS, THEMES } from '@/utils/theme';
 import { DestinationInput } from '@/components/DestinationInput';
 
@@ -46,13 +46,15 @@ function newDiscoveryId() {
   return `discovery_${typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now()}`;
 }
 
-type IntakeSeed = { sourceUrl: string; platform: string };
+type ModalState =
+  | { mode: 'create'; sourceUrl: string; platform: string }
+  | { mode: 'edit'; discovery: Discovery };
 
 export default function DiscoveryTab() {
   const queryClient = useQueryClient();
   const [themeFilter, setThemeFilter] = useState<string>('all');
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [intakeOpen, setIntakeOpen] = useState<IntakeSeed | null>(null);
+  const [modal, setModal] = useState<ModalState | null>(null);
   const [pasteValue, setPasteValue] = useState('');
 
   const { data: discoveries = [], isLoading } = useQuery<Discovery[]>({
@@ -90,11 +92,50 @@ export default function DiscoveryTab() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['discoveries'] });
       toast.success('Saved to Discovery.');
-      setIntakeOpen(null);
+      setModal(null);
       setPasteValue('');
     },
     onError: (e: Error) => {
       toast.error(e.message || 'Could not save — try again.');
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (payload: {
+      id: string;
+      sourceUrl: string;
+      platform: string;
+      destination: string;
+      notes: string;
+      themeGuess: string;
+      imageUrl: string;
+      status: string;
+    }) => {
+      const res = await fetch(`/api/discoveries/${payload.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sourceUrl: payload.sourceUrl,
+          platform: payload.platform,
+          destination: payload.destination,
+          notes: payload.notes,
+          themeGuess: payload.themeGuess,
+          imageUrl: payload.imageUrl,
+          status: payload.status,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}) as { error?: string });
+        throw new Error(err.error || 'Failed to update discovery');
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['discoveries'] });
+      toast.success('Discovery updated.');
+      setModal(null);
+    },
+    onError: (e: Error) => {
+      toast.error(e.message || 'Could not update — try again.');
     },
   });
 
@@ -137,7 +178,7 @@ export default function DiscoveryTab() {
   function handlePasteAdd() {
     const url = pasteValue.trim();
     if (!url) return;
-    setIntakeOpen({ sourceUrl: url, platform: detectPlatform(url) });
+    setModal({ mode: 'create', sourceUrl: url, platform: detectPlatform(url) });
   }
 
   const destinationCount = grouped.length;
@@ -183,7 +224,7 @@ export default function DiscoveryTab() {
           </button>
         </div>
         <button
-          onClick={() => setIntakeOpen({ sourceUrl: '', platform: 'manual' })}
+          onClick={() => setModal({ mode: 'create', sourceUrl: '', platform: 'manual' })}
           className="rounded-full border px-4 py-2 text-sm font-medium whitespace-nowrap"
           style={{ borderColor: COLORS.borderMedium, color: COLORS.ink, fontFamily: FONTS.body }}
         >
@@ -375,14 +416,22 @@ export default function DiscoveryTab() {
                         >
                           {d.title || d.destination}
                         </span>
-                        <button
-                          onClick={() => deleteMutation.mutate(d.id)}
-                          className="shrink-0 mt-0.5"
-                          style={{ color: COLORS.terracotta }}
-                          aria-label="Remove discovery"
-                        >
-                          <Trash2 size={13} />
-                        </button>
+                        <div className="flex items-center gap-2.5 shrink-0 mt-0.5">
+                          <button
+                            onClick={() => setModal({ mode: 'edit', discovery: d })}
+                            style={{ color: COLORS.gray }}
+                            aria-label="Edit discovery"
+                          >
+                            <Pencil size={13} />
+                          </button>
+                          <button
+                            onClick={() => deleteMutation.mutate(d.id)}
+                            style={{ color: COLORS.terracotta }}
+                            aria-label="Remove discovery"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
                       </div>
                       <span
                         className="text-xs italic"
@@ -417,19 +466,32 @@ export default function DiscoveryTab() {
         </div>
       )}
 
-      {intakeOpen && (
+      {modal && (
         <IntakeModal
-          seed={intakeOpen}
-          onCancel={() => setIntakeOpen(null)}
-          onSave={(destination, notes) =>
-            createMutation.mutate({
-              sourceUrl: intakeOpen.sourceUrl,
-              platform: intakeOpen.platform,
-              destination,
-              notes,
-            })
-          }
-          saving={createMutation.isPending}
+          state={modal}
+          onCancel={() => setModal(null)}
+          onSave={(destination, notes) => {
+            if (modal.mode === 'edit') {
+              updateMutation.mutate({
+                id: modal.discovery.id,
+                sourceUrl: modal.discovery.sourceUrl,
+                platform: modal.discovery.platform,
+                themeGuess: modal.discovery.themeGuess,
+                imageUrl: modal.discovery.imageUrl,
+                status: modal.discovery.status,
+                destination,
+                notes,
+              });
+            } else {
+              createMutation.mutate({
+                sourceUrl: modal.sourceUrl,
+                platform: modal.platform,
+                destination,
+                notes,
+              });
+            }
+          }}
+          saving={modal.mode === 'edit' ? updateMutation.isPending : createMutation.isPending}
         />
       )}
     </section>
@@ -437,37 +499,39 @@ export default function DiscoveryTab() {
 }
 
 function IntakeModal({
-  seed,
+  state,
   onCancel,
   onSave,
   saving,
 }: {
-  seed: IntakeSeed;
+  state: ModalState;
   onCancel: () => void;
   onSave: (destination: string, notes: string) => void;
   saving: boolean;
 }) {
-  const [destination, setDestination] = useState('');
-  const [notes, setNotes] = useState('');
+  const isEdit = state.mode === 'edit';
+  const sourceUrl = isEdit ? state.discovery.sourceUrl : state.sourceUrl;
+  const [destination, setDestination] = useState(isEdit ? state.discovery.destination : '');
+  const [notes, setNotes] = useState(isEdit ? state.discovery.notes : '');
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 p-0 sm:p-6">
       <div className="bg-white rounded-t-3xl sm:rounded-2xl w-full sm:max-w-md max-h-[92vh] overflow-y-auto p-6">
         <div className="flex items-center justify-between mb-5">
           <h3 style={{ fontFamily: FONTS.display }} className="text-2xl">
-            {seed.sourceUrl ? 'Save this' : 'Quick add'}
+            {isEdit ? 'Edit discovery' : sourceUrl ? 'Save this' : 'Quick add'}
           </h3>
           <button onClick={onCancel} aria-label="Close">
             <X size={20} style={{ color: COLORS.ink }} />
           </button>
         </div>
 
-        {seed.sourceUrl && (
+        {sourceUrl && (
           <div
             className="text-xs mb-4 px-3 py-2 rounded-lg break-all"
             style={{ background: COLORS.cloud, color: COLORS.gray, fontFamily: FONTS.mono }}
           >
-            {seed.sourceUrl}
+            {sourceUrl}
           </div>
         )}
 
@@ -506,7 +570,7 @@ function IntakeModal({
             className="px-4 py-2 rounded-full text-sm font-medium text-white disabled:opacity-50"
             style={{ background: GRADIENT.solid, fontFamily: FONTS.body }}
           >
-            {saving ? 'Saving…' : 'Save'}
+            {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Save'}
           </button>
         </div>
       </div>
