@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import fetchToWeb from '@/__create/fetch';
 import { COLORS, FONTS } from '@/utils/theme';
@@ -14,6 +14,16 @@ export function DestinationInput({
   const [query, setQuery] = useState(value);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  // Without this, the field only ever reflects `value` at first mount --
+  // opening an edit form (Discovery or the pre-existing trip editor) with a
+  // non-empty starting value showed a blank input, even though the correct
+  // value was still being tracked internally and would save fine if left
+  // untouched. Matches the web version's DestinationInput, which already
+  // has this effect.
+  useEffect(() => {
+    setQuery(value);
+  }, [value]);
 
   const fetchSuggestions = useCallback((input: string) => {
     clearTimeout(debounceRef.current);

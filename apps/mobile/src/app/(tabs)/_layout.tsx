@@ -33,6 +33,13 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, size }) => <Ionicons name="sparkles-outline" size={size} color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="discovery"
+        options={{
+          title: 'Discovery',
+          tabBarIcon: ({ color, size }) => <Ionicons name="heart-outline" size={size} color={color} />,
+        }}
+      />
     </Tabs>
   );
 }
