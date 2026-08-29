@@ -1625,6 +1625,48 @@ export default function TripDetailPage() {
               </div>
             )}
 
+            {/* Source links — attached via Discovery's "Start a trip from
+                these" (promote-to-trip). Separate from affiliateLinks
+                (revenue-only, gold) — teal to visually tie back to
+                Discovery's own accent. */}
+            {trip.sourceLinks?.length > 0 && (
+              <div
+                className="rounded-2xl border p-5"
+                style={{ borderColor: COLORS.border, background: COLORS.white }}
+              >
+                <div
+                  className="text-[9px] uppercase tracking-widest mb-3 flex items-center gap-1.5"
+                  style={{ fontFamily: FONTS.mono, color: COLORS.teal }}
+                >
+                  <Link2 size={10} /> Discovered from
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {trip.sourceLinks.map((l, i) =>
+                    l.url ? (
+                      <a
+                        key={i}
+                        href={l.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs px-3 py-1.5 rounded-full border flex items-center gap-1 hover:bg-neutral-50 transition"
+                        style={{ borderColor: COLORS.teal, color: COLORS.teal }}
+                      >
+                        {l.label}
+                      </a>
+                    ) : (
+                      <span
+                        key={i}
+                        className="text-xs px-3 py-1.5 rounded-full border"
+                        style={{ borderColor: COLORS.border, color: COLORS.gray }}
+                      >
+                        {l.label}
+                      </span>
+                    )
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Trip inbox — email forwarding */}
             <div
               className="rounded-2xl overflow-hidden"

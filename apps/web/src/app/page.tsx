@@ -22,7 +22,7 @@ import {
 import useHandleStreamResponse from '@/utils/useHandleStreamResponse';
 import { COLORS, GRADIENT, FONTS, FONT_LINK, THEMES } from '@/utils/theme';
 import { DestinationInput } from '@/components/DestinationInput';
-import DiscoveryTab from '@/components/DiscoveryTab';
+import DiscoveryTab, { promoteDiscoveries, type Discovery, type PromoteDraft } from '@/components/DiscoveryTab';
 
 type AffiliateLink = { label: string; url: string };
 // Discovery source links attached via promote-to-trip (T8) — separate from
@@ -832,6 +832,11 @@ function Advisor({
 export default function App() {
   const [tab, setTab] = useState<'explore' | 'plan' | 'advisor' | 'discovery'>('explore');
   const [editing, setEditing] = useState<Trip | null>(null);
+  // Discoveries only get marked "promoted" once the reviewed draft trip
+  // actually saves (see createMutation.onSuccess below) — never the moment
+  // "Start a trip from these" is clicked. Otherwise canceling the editor
+  // would leave discoveries pointing at a trip that was never created.
+  const [pendingPromotedDiscoveries, setPendingPromotedDiscoveries] = useState<Discovery[] | null>(null);
   const queryClient = useQueryClient();
 
   const { data: trips = [], isLoading } = useQuery<Trip[]>({
@@ -852,10 +857,17 @@ export default function App() {
       });
       if (!res.ok) throw new Error('Failed to create trip');
     },
-    onSuccess: () => {
+    onSuccess: (_data, trip) => {
       queryClient.invalidateQueries({ queryKey: ['trips'] });
       toast.success('Trip saved!');
       setEditing(null);
+      if (pendingPromotedDiscoveries) {
+        const toPromote = pendingPromotedDiscoveries;
+        setPendingPromotedDiscoveries(null);
+        promoteDiscoveries(toPromote, trip.id)
+          .then(() => queryClient.invalidateQueries({ queryKey: ['discoveries'] }))
+          .catch((e) => console.error('Failed to mark discoveries promoted:', e));
+      }
     },
     onError: (e) => {
       console.error(e);
@@ -959,6 +971,20 @@ export default function App() {
     setEditing(trip);
     setTab('plan');
     toast.success('Trip loaded into editor — review and save!');
+  };
+
+  const handlePromoteToTrip = (draft: PromoteDraft, discoveries: Discovery[]) => {
+    const trip: Trip = {
+      ...emptyTrip(),
+      destination: draft.destination,
+      theme: draft.theme,
+      sourceLinks: draft.sourceLinks,
+      status: 'draft',
+    };
+    setPendingPromotedDiscoveries(discoveries);
+    setEditing(trip);
+    setTab('plan');
+    toast.success('Trip pre-filled from your discoveries — review and save!');
   };
 
   const published = trips.filter((t) => t.status === 'published');
@@ -1131,7 +1157,7 @@ export default function App() {
           <Advisor trips={trips} onCreateTrip={handleCreateFromAdvisor} />
         </section>
 
-        {tab === 'discovery' && <DiscoveryTab />}
+        {tab === 'discovery' && <DiscoveryTab onPromoteToTrip={handlePromoteToTrip} />}
       </main>
 
       {editing && (

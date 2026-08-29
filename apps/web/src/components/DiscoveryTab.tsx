@@ -50,7 +50,47 @@ type ModalState =
   | { mode: 'create'; sourceUrl: string; platform: string }
   | { mode: 'edit'; discovery: Discovery };
 
-export default function DiscoveryTab() {
+// Lightweight handoff shape, matching how the Advisor already hands off to
+// Plan via TripSuggestion — DiscoveryTab doesn't need to know Trip's full
+// shape, page.tsx (which owns emptyTrip()) builds the actual draft from this.
+export type PromoteDraft = {
+  destination: string;
+  theme: string;
+  sourceLinks: { label: string; url: string; platform: string }[];
+};
+
+// Called from page.tsx's createMutation.onSuccess, once the reviewed draft
+// trip actually saves — never called earlier than that, so a discovery can
+// never end up marked "promoted" pointing at a trip that was never created
+// (e.g. if the user opens the pre-filled editor and cancels instead of
+// saving).
+export async function promoteDiscoveries(discoveries: Discovery[], tripId: string) {
+  await Promise.all(
+    discoveries.map((d) =>
+      fetch(`/api/discoveries/${d.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sourceUrl: d.sourceUrl,
+          platform: d.platform,
+          title: d.title,
+          destination: d.destination,
+          notes: d.notes,
+          themeGuess: d.themeGuess,
+          imageUrl: d.imageUrl,
+          status: 'promoted',
+          promotedTripId: tripId,
+        }),
+      })
+    )
+  );
+}
+
+export default function DiscoveryTab({
+  onPromoteToTrip,
+}: {
+  onPromoteToTrip: (draft: PromoteDraft, discoveries: Discovery[]) => void;
+}) {
   const queryClient = useQueryClient();
   const [themeFilter, setThemeFilter] = useState<string>('all');
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -150,6 +190,41 @@ export default function DiscoveryTab() {
     },
     onError: () => toast.error('Could not remove — try again.'),
   });
+
+  function handlePromote() {
+    const chosen = discoveries.filter((d) => selected.has(d.id));
+    if (chosen.length === 0) return;
+
+    const destinations = new Set(chosen.map((d) => d.destination.trim().toLowerCase()));
+    if (destinations.size > 1) {
+      toast.error('Select discoveries for one destination at a time.');
+      return;
+    }
+
+    // Most common non-empty theme guess among the selection; falls back to
+    // THEMES[0] (matching emptyTrip()'s own default) since nothing has real
+    // theme classification yet — every discovery is "Unthemed" today.
+    const themeCounts = new Map<string, number>();
+    for (const d of chosen) {
+      if (!d.themeGuess) continue;
+      themeCounts.set(d.themeGuess, (themeCounts.get(d.themeGuess) ?? 0) + 1);
+    }
+    let theme: string = THEMES[0].id;
+    let bestCount = 0;
+    for (const [id, count] of themeCounts) {
+      if (count > bestCount) {
+        theme = id;
+        bestCount = count;
+      }
+    }
+
+    const sourceLinks = chosen
+      .filter((d) => d.sourceUrl)
+      .map((d) => ({ label: d.title || d.destination, url: d.sourceUrl, platform: d.platform }));
+
+    onPromoteToTrip({ destination: chosen[0].destination, theme, sourceLinks }, chosen);
+    setSelected(new Set());
+  }
 
   const filtered = useMemo(
     () => (themeFilter === 'all' ? discoveries : discoveries.filter((d) => d.themeGuess === themeFilter)),
@@ -457,7 +532,7 @@ export default function DiscoveryTab() {
             {selected.size} selected
           </span>
           <button
-            onClick={() => toast.info('Promote to trip is coming soon.')}
+            onClick={handlePromote}
             className="rounded-full px-4 py-2 text-sm font-medium text-white whitespace-nowrap"
             style={{ background: GRADIENT.solid, fontFamily: FONTS.body }}
           >

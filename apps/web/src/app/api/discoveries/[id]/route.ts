@@ -34,7 +34,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   try {
     const { id } = await params;
     const body = await request.json();
-    const { sourceUrl, platform, title, destination, themeGuess, notes, imageUrl, status } = body;
+    const { sourceUrl, platform, title, destination, themeGuess, notes, imageUrl, status, promotedTripId } = body;
 
     if (!destination || !String(destination).trim()) {
       return Response.json({ error: 'Destination is required' }, { status: 400 });
@@ -55,7 +55,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         theme_guess = ${themeGuess ?? ''},
         notes = ${notes ?? ''},
         image_url = ${imageUrl ?? ''},
-        status = ${status ?? 'new'}
+        status = ${status ?? 'new'},
+        promoted_trip_id = ${promotedTripId ?? null}
       WHERE id = ${id}
     `;
     return Response.json({ success: true });
