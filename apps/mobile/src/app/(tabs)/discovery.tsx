@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
   Alert,
@@ -25,7 +26,8 @@ import {
   updateDiscovery,
   type Discovery,
 } from '@/utils/discoveries';
-import { THEMES } from '@/utils/trips';
+import { THEMES, emptyTrip } from '@/utils/trips';
+import { usePendingTripStore } from '@/utils/tripStore';
 
 export default function DiscoveryScreen() {
   const queryClient = useQueryClient();
@@ -107,6 +109,52 @@ export default function DiscoveryScreen() {
       else next.add(id);
       return next;
     });
+  };
+
+  const setPendingTrip = usePendingTripStore((s) => s.setTrip);
+  const setPromotingDiscoveries = usePendingTripStore((s) => s.setPromotingDiscoveries);
+
+  const handlePromote = () => {
+    const chosen = discoveries.filter((d) => selected.has(d.id));
+    if (chosen.length === 0) return;
+
+    const destinations = new Set(chosen.map((d) => d.destination.trim().toLowerCase()));
+    if (destinations.size > 1) {
+      Alert.alert('One destination at a time', 'Select discoveries for one destination at a time.');
+      return;
+    }
+
+    // Most common non-empty theme guess among the selection; falls back to
+    // THEMES[0] (matching emptyTrip()'s own default) since nothing has real
+    // theme classification yet. Mirrors the same logic on web.
+    const themeCounts = new Map<string, number>();
+    for (const d of chosen) {
+      if (!d.themeGuess) continue;
+      themeCounts.set(d.themeGuess, (themeCounts.get(d.themeGuess) ?? 0) + 1);
+    }
+    let theme: string = THEMES[0].id;
+    let bestCount = 0;
+    for (const [id, count] of themeCounts) {
+      if (count > bestCount) {
+        theme = id;
+        bestCount = count;
+      }
+    }
+
+    const sourceLinks = chosen
+      .filter((d) => d.sourceUrl)
+      .map((d) => ({ label: d.title || d.destination, url: d.sourceUrl, platform: d.platform }));
+
+    setPromotingDiscoveries(chosen);
+    setPendingTrip({
+      ...emptyTrip(),
+      destination: chosen[0].destination,
+      theme,
+      sourceLinks,
+      status: 'draft',
+    });
+    setSelected(new Set());
+    router.push('/(tabs)/plan');
   };
 
   const filtered = useMemo(
@@ -236,7 +284,7 @@ export default function DiscoveryScreen() {
       {selected.size > 0 && (
         <View style={styles.bulkBar}>
           <Text style={styles.bulkCount}>{selected.size} selected</Text>
-          <Pressable onPress={() => Alert.alert('Coming soon', 'Promote to trip is coming soon.')}>
+          <Pressable onPress={handlePromote}>
             <LinearGradient colors={GRADIENT.colors} start={GRADIENT.start} end={GRADIENT.end} style={styles.bulkCta}>
               <Text style={styles.bulkCtaText}>Start a trip from these</Text>
             </LinearGradient>

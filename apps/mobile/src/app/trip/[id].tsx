@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Image, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AddEntryModal, type EditEntry } from '@/components/AddEntryModal';
 import { isoToDisplayDate } from '@/utils/dateFormat';
@@ -346,6 +346,28 @@ export default function TripDetailScreen() {
                         <Text style={styles.linkPillText}>{l.label}</Text>
                       </View>
                     ))}
+                  </View>
+                </View>
+              )}
+
+              {trip.sourceLinks?.length > 0 && (
+                <View style={styles.card}>
+                  <View style={styles.rowGap}>
+                    <Ionicons name="link-outline" size={11} color={COLORS.teal} />
+                    <Text style={[styles.cardLabel, { color: COLORS.teal }]}>DISCOVERED FROM</Text>
+                  </View>
+                  <View style={styles.linksWrap}>
+                    {trip.sourceLinks.map((l, i) =>
+                      l.url ? (
+                        <Pressable key={i} onPress={() => Linking.openURL(l.url)} style={styles.sourceLinkPill}>
+                          <Text style={styles.sourceLinkPillText}>{l.label}</Text>
+                        </Pressable>
+                      ) : (
+                        <View key={i} style={styles.sourceLinkPillPlain}>
+                          <Text style={styles.sourceLinkPillPlainText}>{l.label}</Text>
+                        </View>
+                      )
+                    )}
                   </View>
                 </View>
               )}
@@ -706,6 +728,22 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
   linkPillText: { fontSize: 12, color: '#8a6c1a', fontFamily: FONTS.body },
+  sourceLinkPill: {
+    borderWidth: 1,
+    borderColor: COLORS.teal,
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  sourceLinkPillText: { fontSize: 12, color: COLORS.teal, fontFamily: FONTS.body },
+  sourceLinkPillPlain: {
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
+  sourceLinkPillPlainText: { fontSize: 12, color: '#9CA3AF', fontFamily: FONTS.body },
 
   inboxCard: { borderRadius: 16, padding: 18 },
   inboxLabel: { color: 'rgba(255,255,255,0.5)', fontSize: 9, letterSpacing: 1.5, fontFamily: FONTS.mono },

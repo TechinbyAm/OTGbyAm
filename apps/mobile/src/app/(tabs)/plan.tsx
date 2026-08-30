@@ -9,6 +9,7 @@ import { BrandHeader } from '@/components/BrandHeader';
 import { TripCard } from '@/components/TripCard';
 import { TripEditorModal } from '@/components/TripEditorModal';
 import { COLORS, FONTS, GRADIENT } from '@/utils/theme';
+import { promoteDiscoveries, type Discovery } from '@/utils/discoveries';
 import { usePendingTripStore } from '@/utils/tripStore';
 import { createTrip, deleteTrip, emptyTrip, fetchTrips, updateTrip, type Trip } from '@/utils/trips';
 
@@ -21,24 +22,34 @@ export default function PlanScreen() {
     isRefetching,
   } = useQuery({ queryKey: ['trips'], queryFn: fetchTrips });
   const [editing, setEditing] = useState<Trip | null>(null);
+  const [pendingPromotedDiscoveries, setPendingPromotedDiscoveries] = useState<Discovery[] | null>(null);
 
   const pendingSuggestion = usePendingTripStore((s) => s.trip);
+  const pendingPromoting = usePendingTripStore((s) => s.promotingDiscoveries);
   const clearPending = usePendingTripStore((s) => s.clear);
 
   useEffect(() => {
     if (pendingSuggestion) {
       setEditing(pendingSuggestion);
+      if (pendingPromoting) setPendingPromotedDiscoveries(pendingPromoting);
       clearPending();
     }
-  }, [pendingSuggestion, clearPending]);
+  }, [pendingSuggestion, pendingPromoting, clearPending]);
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ['trips'] });
 
   const createMutation = useMutation({
     mutationFn: createTrip,
-    onSuccess: () => {
+    onSuccess: (_data, trip) => {
       invalidate();
       setEditing(null);
+      if (pendingPromotedDiscoveries) {
+        const discoveries = pendingPromotedDiscoveries;
+        setPendingPromotedDiscoveries(null);
+        promoteDiscoveries(discoveries, trip.id).then(() =>
+          queryClient.invalidateQueries({ queryKey: ['discoveries'] })
+        );
+      }
     },
     onError: () => Alert.alert('Error', 'Could not save trip.'),
   });

@@ -87,3 +87,28 @@ export async function deleteDiscovery(id: string) {
   const res = await fetchToWeb(`/api/discoveries/${id}`, { method: 'DELETE' });
   if (!res.ok) throw new Error('Failed to delete discovery');
 }
+
+// Called from plan.tsx's createMutation.onSuccess, once the reviewed draft
+// trip actually saves. Mirrors the same function in
+// apps/web/src/components/DiscoveryTab.tsx.
+export async function promoteDiscoveries(discoveries: Discovery[], tripId: string) {
+  await Promise.all(
+    discoveries.map((d) =>
+      fetchToWeb(`/api/discoveries/${d.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sourceUrl: d.sourceUrl,
+          platform: d.platform,
+          title: d.title,
+          destination: d.destination,
+          notes: d.notes,
+          themeGuess: d.themeGuess,
+          imageUrl: d.imageUrl,
+          status: 'promoted',
+          promotedTripId: tripId,
+        }),
+      })
+    )
+  );
+}
